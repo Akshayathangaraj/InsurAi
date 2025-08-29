@@ -1,17 +1,14 @@
 package com.insurai.insurai.service;
 
-import com.insurai.insurai.model.Employee;
+import com.insurai.insurai.dto.EmployeeRequestDTO;
+import com.insurai.insurai.dto.EmployeeResponseDTO;
+
 import java.util.List;
 
 public interface EmployeeService {
-
-    List<Employee> getAllEmployees();
-
-    Employee getById(Long id);
-
-    Employee saveEmployee(Employee employee);
-
-    Employee updateEmployee(Long id, Employee updates);
-
+    List<EmployeeResponseDTO> getAllEmployees();
+    EmployeeResponseDTO getById(Long id);
+    EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto);
+    EmployeeResponseDTO updateEmployee(Long id, EmployeeRequestDTO dto);
     void deleteEmployee(Long id);
 }

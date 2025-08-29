@@ -6,4 +6,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
+
+    // Check if any employee is linked to this insurance policy
+    boolean existsByPolicies_Id(Long policyId);
 }

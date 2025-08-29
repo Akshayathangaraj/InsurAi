@@ -6,7 +6,7 @@ import java.util.List;
 public interface InsuranceService {
     List<Insurance> getAllPolicies();
     Insurance getById(Long id);
-    Insurance savePolicy(Insurance insurance); // renamed to match controller
+    Insurance savePolicy(Insurance insurance);
     Insurance updatePolicy(Long id, Insurance updates);
-    void deletePolicy(Long id);
+    void deletePolicy(Long id);  // will now include manual check
 }

@@ -1,11 +1,7 @@
 package com.insurai.insurai.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
+import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(
@@ -24,10 +20,14 @@ public class Insurance {
     private String holderName;
     private Double premium; // Wrapper class preferred
 
+    // Reverse mapping to Employee (many-to-many)
+    @ManyToMany(mappedBy = "policies", fetch = FetchType.LAZY)
+    private List<Employee> employees;
+
     // Default constructor (required by JPA)
     public Insurance() {}
 
-    // Parameterized constructor (optional, for easy object creation)
+    // Parameterized constructor
     public Insurance(String policyName, String holderName, Double premium) {
         this.policyName = policyName;
         this.holderName = holderName;
@@ -46,6 +46,9 @@ public class Insurance {
 
     public Double getPremium() { return premium; }
     public void setPremium(Double premium) { this.premium = premium; }
+
+    public List<Employee> getEmployees() { return employees; }
+    public void setEmployees(List<Employee> employees) { this.employees = employees; }
 
     // Optional - For easy debugging/logging
     @Override

@@ -2,8 +2,13 @@ package com.insurai.insurai.service;
 
 import com.insurai.insurai.exception.ResourceNotFoundException;
 import com.insurai.insurai.model.Insurance;
+import com.insurai.insurai.repository.EmployeeRepository;
 import com.insurai.insurai.repository.InsuranceRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.http.HttpStatus;
+import com.insurai.insurai.exception.PolicyInUseException;
+
 
 import java.util.List;
 
@@ -11,9 +16,11 @@ import java.util.List;
 public class InsuranceServiceImpl implements InsuranceService {
 
     private final InsuranceRepository repo;
+    private final EmployeeRepository employeeRepo;
 
-    public InsuranceServiceImpl(InsuranceRepository repo) {
+    public InsuranceServiceImpl(InsuranceRepository repo, EmployeeRepository employeeRepo) {
         this.repo = repo;
+        this.employeeRepo = employeeRepo;
     }
 
     @Override
@@ -42,8 +49,17 @@ public class InsuranceServiceImpl implements InsuranceService {
     }
 
     @Override
-    public void deletePolicy(Long id) {
-        Insurance existing = getById(id);
-        repo.delete(existing);
+public void deletePolicy(Long id) {
+    Insurance existing = getById(id);
+
+    if (existing.getEmployees() != null && !existing.getEmployees().isEmpty()) {
+        throw new PolicyInUseException(
+            "Cannot delete policy. It is assigned to " + existing.getEmployees().size() + " employee(s)."
+        );
     }
+
+    repo.delete(existing);
+}
+
+
 }

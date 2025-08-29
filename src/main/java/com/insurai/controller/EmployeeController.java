@@ -1,7 +1,9 @@
 package com.insurai.insurai.controller;
 
-import com.insurai.insurai.model.Employee;
+import com.insurai.insurai.dto.EmployeeRequestDTO;
+import com.insurai.insurai.dto.EmployeeResponseDTO;
 import com.insurai.insurai.service.EmployeeService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,25 +19,33 @@ public class EmployeeController {
     public EmployeeController(EmployeeService service) {
         this.service = service;
     }
-    
+
+    // GET all employees (returns DTOs with full policy details)
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees() {
+    public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
         return ResponseEntity.ok(service.getAllEmployees());
     }
+
+    // GET employee by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeById(@PathVariable Long id) {
         return ResponseEntity.ok(service.getById(id));
     }
+
+    // POST create a new employee (accepts policy IDs)
     @PostMapping
-    public ResponseEntity<Employee> createEmployee(@RequestBody Employee employee) {
-        return ResponseEntity.ok(service.saveEmployee(employee));
+    public ResponseEntity<EmployeeResponseDTO> createEmployee(@Valid @RequestBody EmployeeRequestDTO dto) {
+        return ResponseEntity.ok(service.createEmployee(dto));
     }
 
+    // PUT update employee
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@PathVariable Long id,@RequestBody Employee updates) {
-        return ResponseEntity.ok(service.updateEmployee(id, updates));
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee(@PathVariable Long id,
+                                                              @Valid @RequestBody EmployeeRequestDTO dto) {
+        return ResponseEntity.ok(service.updateEmployee(id, dto));
     }
 
+    // DELETE employee
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         service.deleteEmployee(id);
