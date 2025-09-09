@@ -1,14 +1,11 @@
 package com.insurai.insurai.service;
 
+import com.insurai.insurai.exception.PolicyInUseException;
 import com.insurai.insurai.exception.ResourceNotFoundException;
 import com.insurai.insurai.model.Insurance;
 import com.insurai.insurai.repository.EmployeeRepository;
 import com.insurai.insurai.repository.InsuranceRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-import org.springframework.http.HttpStatus;
-import com.insurai.insurai.exception.PolicyInUseException;
-
 
 import java.util.List;
 
@@ -40,26 +37,31 @@ public class InsuranceServiceImpl implements InsuranceService {
     }
 
     @Override
-    public Insurance updatePolicy(Long id, Insurance updates) {
-        Insurance existing = getById(id);
-        existing.setPolicyName(updates.getPolicyName());
-        existing.setHolderName(updates.getHolderName());
-        existing.setPremium(updates.getPremium());
-        return repo.save(existing);
-    }
-
-    @Override
-public void deletePolicy(Long id) {
+public Insurance updatePolicy(Long id, Insurance updates) {
     Insurance existing = getById(id);
-
-    if (existing.getEmployees() != null && !existing.getEmployees().isEmpty()) {
-        throw new PolicyInUseException(
-            "Cannot delete policy. It is assigned to " + existing.getEmployees().size() + " employee(s)."
-        );
-    }
-
-    repo.delete(existing);
+    existing.setPolicyName(updates.getPolicyName());
+    existing.setPolicyType(updates.getPolicyType());
+    existing.setPremium(updates.getPremium());
+    existing.setCoverageAmount(updates.getCoverageAmount());
+    existing.setStartDate(updates.getStartDate());
+    existing.setEndDate(updates.getEndDate());
+    existing.setStatus(updates.getStatus());
+    existing.setRenewalDate(updates.getRenewalDate());
+    existing.setClaimLimit(updates.getClaimLimit());
+    existing.setProvider(updates.getProvider());
+    existing.setRiskLevel(updates.getRiskLevel());
+    existing.setGracePeriod(updates.getGracePeriod());
+    existing.setTermsAndConditions(updates.getTermsAndConditions());
+    return repo.save(existing);
 }
 
 
+    @Override
+    public void deletePolicy(Long id) {
+        if (employeeRepo.existsByPolicies_Id(id)) {
+            throw new PolicyInUseException("Cannot delete policy. It is assigned to one or more employees.");
+        }
+        Insurance existing = getById(id);
+        repo.delete(existing);
+    }
 }

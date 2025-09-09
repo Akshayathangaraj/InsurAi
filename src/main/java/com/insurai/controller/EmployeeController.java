@@ -20,7 +20,7 @@ public class EmployeeController {
         this.service = service;
     }
 
-    // GET all employees (returns DTOs with full policy details)
+    // GET all employees
     @GetMapping
     public ResponseEntity<List<EmployeeResponseDTO>> getAllEmployees() {
         return ResponseEntity.ok(service.getAllEmployees());
@@ -32,7 +32,7 @@ public class EmployeeController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    // POST create a new employee (accepts policy IDs)
+    // POST create a new employee
     @PostMapping
     public ResponseEntity<EmployeeResponseDTO> createEmployee(@Valid @RequestBody EmployeeRequestDTO dto) {
         return ResponseEntity.ok(service.createEmployee(dto));

@@ -14,7 +14,6 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    // Handle Resource Not Found
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleNotFound(ResourceNotFoundException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -25,7 +24,6 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
-    // Handle validation errors
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleValidation(MethodArgumentNotValidException ex) {
         Map<String, Object> body = new HashMap<>();
@@ -43,14 +41,15 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(PolicyInUseException.class)
-public ResponseEntity<?> handlePolicyInUse(PolicyInUseException ex) {
-    Map<String, Object> body = new HashMap<>();
-    body.put("error", "POLICY_IN_USE");
-    body.put("message", ex.getMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
-}
+    public ResponseEntity<?> handlePolicyInUse(PolicyInUseException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.BAD_REQUEST.value());
+        body.put("error", "POLICY_IN_USE");
+        body.put("message", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    }
 
-    // Catch-all for other exceptions
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleAllExceptions(Exception ex) {
         Map<String, Object> body = new HashMap<>();

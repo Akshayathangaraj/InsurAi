@@ -3,40 +3,67 @@ package com.insurai.insurai.dto;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import java.time.LocalDate;
 import java.util.List;
 
 public class EmployeeRequestDTO {
 
-    @NotBlank
+    @NotBlank(message = "Name is required")
     private String name;
 
     private String department;
+    private String role;
 
-    @Email
-    @NotBlank
+    @Email(message = "Invalid email format")
+    @NotBlank(message = "Email is required")
     private String email;
 
-    @Min(18)
+    private String phone;
+    private String password;
+
+    @Min(value = 18, message = "Age must be at least 18")
     private Integer age;
 
-    // list of policy ids to link
-    private List<Long> policyIds;
+    private LocalDate dateOfJoining;
+    private String employeeStatus;
+    private String profilePhotoURL;
+
+    // Accept policy IDs from JSON
+    private List<Long> policies;
 
     public EmployeeRequestDTO() {}
 
-    // getters & setters
+    // Getters and Setters
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
 
     public String getDepartment() { return department; }
     public void setDepartment(String department) { this.department = department; }
 
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public Integer getAge() { return age; }
     public void setAge(Integer age) { this.age = age; }
 
-    public List<Long> getPolicyIds() { return policyIds; }
-    public void setPolicyIds(List<Long> policyIds) { this.policyIds = policyIds; }
+    public LocalDate getDateOfJoining() { return dateOfJoining; }
+    public void setDateOfJoining(LocalDate dateOfJoining) { this.dateOfJoining = dateOfJoining; }
+
+    public String getEmployeeStatus() { return employeeStatus; }
+    public void setEmployeeStatus(String employeeStatus) { this.employeeStatus = employeeStatus; }
+
+    public String getProfilePhotoURL() { return profilePhotoURL; }
+    public void setProfilePhotoURL(String profilePhotoURL) { this.profilePhotoURL = profilePhotoURL; }
+
+    public List<Long> getPolicies() { return policies; }
+    public void setPolicies(List<Long> policies) { this.policies = policies; }
 }

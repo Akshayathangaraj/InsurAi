@@ -2,8 +2,8 @@ package com.insurai.insurai.service;
 
 import com.insurai.insurai.dto.EmployeeRequestDTO;
 import com.insurai.insurai.dto.EmployeeResponseDTO;
-import com.insurai.insurai.dto.PolicyDTO;
 import com.insurai.insurai.exception.ResourceNotFoundException;
+import com.insurai.insurai.mapper.EmployeeMapper;
 import com.insurai.insurai.model.Employee;
 import com.insurai.insurai.model.Insurance;
 import com.insurai.insurai.repository.EmployeeRepository;
@@ -11,8 +11,8 @@ import com.insurai.insurai.repository.InsuranceRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
@@ -25,36 +25,14 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.insuranceRepo = insuranceRepo;
     }
 
-    // helpers: map policy entity to DTO
-    private PolicyDTO mapToPolicyDTO(Insurance p) {
-        return new PolicyDTO(p.getId(), p.getPolicyName(), p.getHolderName(), p.getPremium());
-    }
-
-    private EmployeeResponseDTO mapToEmployeeResponse(Employee e) {
-        EmployeeResponseDTO dto = new EmployeeResponseDTO();
-        dto.setId(e.getId());
-        dto.setName(e.getName());
-        dto.setDepartment(e.getDepartment());
-        dto.setEmail(e.getEmail());
-        dto.setAge(e.getAge());
-        // guard null policies
-        List<PolicyDTO> policies = Optional.ofNullable(e.getPolicies())
-                .orElse(Collections.emptyList())
-                .stream()
-                .map(this::mapToPolicyDTO)
-                .collect(Collectors.toList());
-        dto.setPolicies(policies);
-        return dto;
-    }
-
+    // Helper: load policies by ID with validation
     private List<Insurance> loadPoliciesByIds(List<Long> ids) {
         if (ids == null || ids.isEmpty()) return Collections.emptyList();
+
         List<Insurance> found = insuranceRepo.findAllById(ids);
-        Set<Long> foundIds = found.stream()
-                .map(Insurance::getId)
-                .collect(Collectors.toSet());
         for (Long id : ids) {
-            if (!foundIds.contains(id)) {
+            boolean exists = found.stream().anyMatch(p -> p.getId().equals(id));
+            if (!exists) {
                 throw new ResourceNotFoundException("Insurance id " + id + " not found");
             }
         }
@@ -64,31 +42,29 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public List<EmployeeResponseDTO> getAllEmployees() {
         return employeeRepo.findAll().stream()
-                .map(this::mapToEmployeeResponse)
-                .collect(Collectors.toList());
+                .map(EmployeeMapper::toEmployeeResponseDTO)
+                .toList();
     }
 
     @Override
     public EmployeeResponseDTO getById(Long id) {
         Employee e = employeeRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee id " + id + " not found"));
-        return mapToEmployeeResponse(e);
+        return EmployeeMapper.toEmployeeResponseDTO(e);
     }
 
     @Override
     @Transactional
     public EmployeeResponseDTO createEmployee(EmployeeRequestDTO dto) {
-        List<Insurance> policies = loadPoliciesByIds(dto.getPolicyIds());
+        List<Insurance> policies = loadPoliciesByIds(dto.getPolicies());
+        Employee e = EmployeeMapper.toEmployeeEntity(dto, policies);
 
-        Employee e = new Employee();
-        e.setName(dto.getName());
-        e.setDepartment(dto.getDepartment());
-        e.setEmail(dto.getEmail());
-        e.setAge(dto.getAge() == null ? 0 : dto.getAge());
-        e.setPolicies(policies);
+        // Set default values if missing
+        if (e.getEmployeeStatus() == null) e.setEmployeeStatus("Active");
+        if (e.getDateOfJoining() == null) e.setDateOfJoining(java.time.LocalDate.now());
 
         Employee saved = employeeRepo.save(e);
-        return mapToEmployeeResponse(saved);
+        return EmployeeMapper.toEmployeeResponseDTO(saved);
     }
 
     @Override
@@ -99,14 +75,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         existing.setName(dto.getName());
         existing.setDepartment(dto.getDepartment());
+        existing.setRole(dto.getRole());
         existing.setEmail(dto.getEmail());
+        existing.setPhone(dto.getPhone());
+        existing.setPassword(dto.getPassword());
         existing.setAge(dto.getAge() == null ? existing.getAge() : dto.getAge());
 
-        List<Insurance> policies = loadPoliciesByIds(dto.getPolicyIds());
-        existing.setPolicies(policies);
+        // Update new fields
+        existing.setDateOfJoining(dto.getDateOfJoining() != null ? dto.getDateOfJoining() : existing.getDateOfJoining());
+        existing.setEmployeeStatus(dto.getEmployeeStatus() != null ? dto.getEmployeeStatus() : existing.getEmployeeStatus());
+        existing.setProfilePhotoURL(dto.getProfilePhotoURL() != null ? dto.getProfilePhotoURL() : existing.getProfilePhotoURL());
+
+        existing.setPolicies(loadPoliciesByIds(dto.getPolicies()));
 
         Employee updated = employeeRepo.save(existing);
-        return mapToEmployeeResponse(updated);
+        return EmployeeMapper.toEmployeeResponseDTO(updated);
     }
 
     @Override
