@@ -1,5 +1,6 @@
 package com.insurai.insurai.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -24,11 +25,14 @@ public class EmployeeRequestDTO {
     @Min(value = 18, message = "Age must be at least 18")
     private Integer age;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfJoining;
-    private String employeeStatus;
-    private String profilePhotoURL;
 
-    // Accept policy IDs from JSON
+    private String employeeStatus;
+
+    private String profilePhotoUrl;
+    private String address;
+
     private List<Long> policies;
 
     public EmployeeRequestDTO() {}
@@ -61,8 +65,13 @@ public class EmployeeRequestDTO {
     public String getEmployeeStatus() { return employeeStatus; }
     public void setEmployeeStatus(String employeeStatus) { this.employeeStatus = employeeStatus; }
 
-    public String getProfilePhotoURL() { return profilePhotoURL; }
-    public void setProfilePhotoURL(String profilePhotoURL) { this.profilePhotoURL = profilePhotoURL; }
+
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
+
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
     public List<Long> getPolicies() { return policies; }
     public void setPolicies(List<Long> policies) { this.policies = policies; }

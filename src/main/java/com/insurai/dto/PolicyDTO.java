@@ -1,5 +1,6 @@
 package com.insurai.insurai.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 
 public class PolicyDTO {
@@ -9,12 +10,19 @@ public class PolicyDTO {
     private String policyType;
     private Double premium;
     private Double coverageAmount;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate startDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
+
     private String status;
 
     // 🔥 New fields
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate renewalDate;
+
     private Integer claimLimit;
     private String provider;
     private String riskLevel;
@@ -88,24 +96,4 @@ public class PolicyDTO {
 
     public String getTermsAndConditions() { return termsAndConditions; }
     public void setTermsAndConditions(String termsAndConditions) { this.termsAndConditions = termsAndConditions; }
-
-    @Override
-    public String toString() {
-        return "PolicyDTO{" +
-                "id=" + id +
-                ", policyName='" + policyName + '\'' +
-                ", policyType='" + policyType + '\'' +
-                ", premium=" + premium +
-                ", coverageAmount=" + coverageAmount +
-                ", startDate=" + startDate +
-                ", endDate=" + endDate +
-                ", status='" + status + '\'' +
-                ", renewalDate=" + renewalDate +
-                ", claimLimit=" + claimLimit +
-                ", provider='" + provider + '\'' +
-                ", riskLevel='" + riskLevel + '\'' +
-                ", gracePeriod=" + gracePeriod +
-                ", termsAndConditions='" + termsAndConditions + '\'' +
-                '}';
-    }
 }

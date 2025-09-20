@@ -28,17 +28,20 @@ public class Employee {
     private String email;
 
     private String phone;
-
     private String password;
 
     @Column(nullable = false)
     private int age;
 
-    // 🔥 New fields
-    private LocalDate dateOfJoining;
-    private String employeeStatus; // Active, On Leave, Resigned
+    private LocalDate dateOfJoining = LocalDate.now();
+    private String employeeStatus = "Active";
     private LocalDateTime lastLogin;
-    private String profilePhotoURL;
+
+    // ✅ Force Hibernate to use "profile_photo_url" only
+    @Column(name = "profile_photo_url")
+    private String profilePhotoUrl;
+
+    private String address;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -48,11 +51,14 @@ public class Employee {
     )
     private List<Insurance> policies;
 
-    public Employee() {}
+    public Employee() {
+        this.dateOfJoining = LocalDate.now();
+        this.employeeStatus = "Active";
+    }
 
     public Employee(String name, String department, String role, String email, String phone,
                     String password, int age, LocalDate dateOfJoining, String employeeStatus,
-                    LocalDateTime lastLogin, String profilePhotoURL, List<Insurance> policies) {
+                    LocalDateTime lastLogin, String profilePhotoUrl, String address, List<Insurance> policies) {
         this.name = name;
         this.department = department;
         this.role = role;
@@ -60,10 +66,11 @@ public class Employee {
         this.phone = phone;
         this.password = password;
         this.age = age;
-        this.dateOfJoining = dateOfJoining;
-        this.employeeStatus = employeeStatus;
+        this.dateOfJoining = (dateOfJoining != null) ? dateOfJoining : LocalDate.now();
+        this.employeeStatus = (employeeStatus != null) ? employeeStatus : "Active";
         this.lastLogin = lastLogin;
-        this.profilePhotoURL = profilePhotoURL;
+        this.profilePhotoUrl = profilePhotoUrl;
+        this.address = address;
         this.policies = policies;
     }
 
@@ -93,16 +100,23 @@ public class Employee {
     public void setAge(int age) { this.age = age; }
 
     public LocalDate getDateOfJoining() { return dateOfJoining; }
-    public void setDateOfJoining(LocalDate dateOfJoining) { this.dateOfJoining = dateOfJoining; }
+    public void setDateOfJoining(LocalDate dateOfJoining) {
+        this.dateOfJoining = (dateOfJoining != null) ? dateOfJoining : LocalDate.now();
+    }
 
     public String getEmployeeStatus() { return employeeStatus; }
-    public void setEmployeeStatus(String employeeStatus) { this.employeeStatus = employeeStatus; }
+    public void setEmployeeStatus(String employeeStatus) {
+        this.employeeStatus = (employeeStatus != null) ? employeeStatus : "Active";
+    }
 
     public LocalDateTime getLastLogin() { return lastLogin; }
     public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
 
-    public String getProfilePhotoURL() { return profilePhotoURL; }
-    public void setProfilePhotoURL(String profilePhotoURL) { this.profilePhotoURL = profilePhotoURL; }
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
     public List<Insurance> getPolicies() { return policies; }
     public void setPolicies(List<Insurance> policies) { this.policies = policies; }
@@ -120,7 +134,8 @@ public class Employee {
                 ", dateOfJoining=" + dateOfJoining +
                 ", employeeStatus='" + employeeStatus + '\'' +
                 ", lastLogin=" + lastLogin +
-                ", profilePhotoURL='" + profilePhotoURL + '\'' +
+                ", profilePhotoUrl='" + profilePhotoUrl + '\'' +
+                ", address='" + address + '\'' +
                 ", policies=" + (policies != null ? policies.size() : 0) +
                 '}';
     }

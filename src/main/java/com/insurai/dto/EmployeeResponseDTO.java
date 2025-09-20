@@ -1,5 +1,6 @@
 package com.insurai.insurai.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,18 +14,26 @@ public class EmployeeResponseDTO {
     private String email;
     private String phone;
     private Integer age;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateOfJoining;
+
     private String employeeStatus;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime lastLogin;
-    private String profilePhotoURL;
+
+    private String profilePhotoUrl;
+    private String address;
+
     private List<PolicyDTO> policies;
 
     public EmployeeResponseDTO() {}
 
-    // Full constructor
     public EmployeeResponseDTO(Long id, String name, String department, String role,
                                String email, String phone, Integer age, LocalDate dateOfJoining,
-                               String employeeStatus, LocalDateTime lastLogin, String profilePhotoURL,
+                               String employeeStatus, LocalDateTime lastLogin,
+                               String profilePhotoUrl, String address,
                                List<PolicyDTO> policies) {
         this.id = id;
         this.name = name;
@@ -36,7 +45,8 @@ public class EmployeeResponseDTO {
         this.dateOfJoining = dateOfJoining;
         this.employeeStatus = employeeStatus;
         this.lastLogin = lastLogin;
-        this.profilePhotoURL = profilePhotoURL;
+        this.profilePhotoUrl = profilePhotoUrl; // fixed
+        this.address = address;
         this.policies = policies;
     }
 
@@ -71,8 +81,11 @@ public class EmployeeResponseDTO {
     public LocalDateTime getLastLogin() { return lastLogin; }
     public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
 
-    public String getProfilePhotoURL() { return profilePhotoURL; }
-    public void setProfilePhotoURL(String profilePhotoURL) { this.profilePhotoURL = profilePhotoURL; }
+    public String getProfilePhotoUrl() { return profilePhotoUrl; }
+    public void setProfilePhotoUrl(String profilePhotoUrl) { this.profilePhotoUrl = profilePhotoUrl; }
+
+    public String getAddress() { return address; }
+    public void setAddress(String address) { this.address = address; }
 
     public List<PolicyDTO> getPolicies() { return policies; }
     public void setPolicies(List<PolicyDTO> policies) { this.policies = policies; }

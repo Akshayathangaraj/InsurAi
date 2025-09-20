@@ -9,4 +9,9 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
     // Check if any employee is linked to this insurance policy
     boolean existsByPolicies_Id(Long policyId);
+
+    // For login
+    boolean existsByEmail(String email);
+    Employee findByEmail(String email);
+    boolean existsByPhone(String phone);
 }
